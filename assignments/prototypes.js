@@ -55,7 +55,7 @@ function Humanoid(attributes) {
   this.team = attributes.team;
   this.weapons = attributes.weapons;
   this.language = attributes.language;
-  GameObject.call(this, attributes);
+  //GameObject.call(this, attributes); //this line is unneccesarry.
   CharacterStats.call(this, attributes);
 }
 /*
@@ -207,7 +207,7 @@ Humanoid.prototype.greet = function() {
 
 
   console.log(`${ourHero.name} sieges upon ${ourVillain.name}`);
-  console.log(`${ourHero.name} gets some strikes with ${ourHero.weapon} doing ${Hero.power} damage to ${ourVillain.name}`);
+  console.log(`${ourHero.name} gets some strikes with ${ourHero.weapon} doing ${ourHero.power} damage to ${ourVillain.name}`);
   console.log(`${ourVillain.name} responds with a power blow to ${ourHero.name}`);
   console.log(`${ourHero.team} watches with pride as their hero ${ourHero.name} takes on the villain ${ourVillain.name}`);
   console.log(`${ourHero.name} swings his ${ourHero.weapon} and gets ready to swing as hard as he can into ${ourVillain.name}.  The hit wreaks tons of damage!`);
