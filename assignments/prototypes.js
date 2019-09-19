@@ -15,14 +15,49 @@
   * dimensions (These represent the character's size in the video game)
   * destroy() // prototype method that returns: `${this.name} was removed from the game.`
 */
+function GameObject(attributes) {
+  this.createdAt = attributes.createdAt;
+  this.name = attributes.name;
+  this.dimensions = attributes.dimensions;
+}
 
+GameObject.prototype.destroy = function() {
+  return `${this.name} was removed from the game.` 
+}
 /*
   === CharacterStats ===
   * healthPoints
   * takeDamage() // prototype method -> returns the string '<object name> took damage.'
   * should inherit destroy() from GameObject's prototype
 */
+function CharacterStats(attributes) {
+  this.healthPoints = attributes.healthPoints;
+  this.currentHealth = this.healthPoints;
+  GameObject.call(this, attributes);
+}
 
+CharacterStats.prototype = Object.create(GameObject.prototype);
+
+CharacterStats.prototype.takeDamage = function() {
+  return `${this.name} has taken damage.`
+}
+
+CharacterStats.prototype.lostHealth = function(damage) {
+  if (damage >= this.currentHealth) {
+    this.destroy();
+  } else {
+    this.currentHealth -= damage;
+    console.log(`${this.name} lost ${damage} health!`)
+  }
+}
+
+function Humanoid(attributes) {
+  this.team = attributes.team;
+  this.weapons = attributes.weapons;
+  this.language = attributes.language;
+  GameObject.call(this, attributes);
+  CharacterStats.call(this, attributes);
+}
 /*
   === Humanoid (Having an appearance or character resembling that of a human.) ===
   * team
@@ -32,7 +67,11 @@
   * should inherit destroy() from GameObject through CharacterStats
   * should inherit takeDamage() from CharacterStats
 */
- 
+Humanoid.prototype = Object.create(CharacterStats.prototype);
+
+Humanoid.prototype.greet = function() {
+  return `${this.name} offers a greeting in ${this.language}`
+}
 /*
   * Inheritance chain: GameObject -> CharacterStats -> Humanoid
   * Instances of Humanoid should have all of the same properties as CharacterStats and GameObject.
@@ -41,7 +80,7 @@
 
 // Test you work by un-commenting these 3 objects and the list of console logs below:
 
-/*
+
   const mage = new Humanoid({
     createdAt: new Date(),
     dimensions: {
@@ -102,9 +141,75 @@
   console.log(archer.greet()); // Lilith offers a greeting in Elvish.
   console.log(mage.takeDamage()); // Bruce took damage.
   console.log(swordsman.destroy()); // Sir Mustachio was removed from the game.
-*/
+
 
   // Stretch task: 
   // * Create Villain and Hero constructor functions that inherit from the Humanoid constructor function.  
   // * Give the Hero and Villains different methods that could be used to remove health points from objects which could result in destruction if health gets to 0 or drops below 0;
   // * Create two new objects, one a villain and one a hero and fight it out with methods!
+
+  function Hero(attributes) {
+    this.power = attributes.power;
+    this.weapon = attributes.weapon;
+    Humanoid.call(this, attributes);
+  }
+
+  Hero.prototype = Object.create(Humanoid.prototype);
+  Hero.prototype.attack = function(enemy) {
+    console.log(`${this.name} uses ${this.weapon} to attack the enemy.`);
+    enemy.lostHealth(this.power);
+  }
+
+  function Villain(attributes) {
+    this.power = attributes.power;
+    this.weapon = attributes.weapon;
+    Humanoid.call(this, attributes);
+  }
+
+  Villain.prototype = Object.create(Humanoid.prototype);
+  Villain.prototype.attack = function(enemy) {
+    console.log(`${this.name} uses ${this.weapon} to attack the enemy.`);
+    enemy.lostHealth(this.power);
+  }
+
+  const ourHero = new Hero({
+    createdAt: new Date(),
+    dimensions: {
+      length: 4,
+      width: 4,
+      height: 4,
+    },
+    healthPoints: 150,
+    power: 30,
+    name: 'Sir Paladin',
+    team: 'Knights The Round Table',
+    weapon: 'Thors Hammer',
+    language: 'Common Tongue',
+  });
+
+  const ourVillain = new Villain({
+    createdAt: new Date(),
+    dimensions: {
+      length: 4,
+      width: 4,
+      height: 4,
+    },
+    healthPoints: 150,
+    power: 28,
+    name: 'Super Bad Guy',
+    team: 'Evil Doers',
+    weapon: 'Evil Sword',
+    language: 'Common Tongue',
+  });
+
+
+
+
+
+  console.log(`${ourHero.name} sieges upon ${ourVillain.name}`);
+  console.log(`${ourHero.name} gets some strikes with ${ourHero.weapon} doing ${Hero.power} damage to ${ourVillain.name}`);
+  console.log(`${ourVillain.name} responds with a power blow to ${ourHero.name}`);
+  console.log(`${ourHero.team} watches with pride as their hero ${ourHero.name} takes on the villain ${ourVillain.name}`);
+  console.log(`${ourHero.name} swings his ${ourHero.weapon} and gets ready to swing as hard as he can into ${ourVillain.name}.  The hit wreaks tons of damage!`);
+  ourHero.attack(ourVillain);
+  console.log(ourVillain.destroy(ourHero));
